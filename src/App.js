@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, IconLayer, TextLayer } from '@deck.gl/layers';
 import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
-import { latlonlineGeoJson, figureGeoJson } from './utils'
+import { latlonlineGeoJson, latlonGridGeoJson, figureGeoJson } from './utils'
 
 const settings = {
   initialViewState: {
@@ -20,6 +20,9 @@ const settings = {
   },
   latlonLineLayer: {
     color: [127, 127, 127]
+  },
+  latlonGridLayer: {
+    color: [127, 255, 127]
   },
   figureLayer: {
     color: [255, 127, 127]
@@ -58,6 +61,19 @@ function App() {
           lineWidthUnits={'pixels'}
           lineWidthScale={1}
           getLineWidth={1}
+
+        // pickable={true}
+        // highlightColor={settings.highlight.color}
+        // autoHighlight={true}
+        />
+
+        <GeoJsonLayer id="latlon-grid-layer"
+          data={latlonGridGeoJson}
+          stroked={true}
+          getLineColor={settings.latlonGridLayer.color}
+          lineWidthUnits={'pixels'}
+          lineWidthScale={1}
+          getLineWidth={5}
 
           pickable={true}
           highlightColor={settings.highlight.color}
