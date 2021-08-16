@@ -1,9 +1,9 @@
 import React, { useState, Fragment } from 'react';
 
 import DeckGL from '@deck.gl/react';
-import { GeoJsonLayer, SolidPolygonLayer, IconLayer, TextLayer } from '@deck.gl/layers';
-import { _GlobeView as GlobeView, MapView } from '@deck.gl/core';
-import { latlonlineGeoJson, latlonGridGeoJson, figureGeoJson } from './utils'
+import { GeoJsonLayer, SolidPolygonLayer } from '@deck.gl/layers';
+import { _GlobeView as GlobeView } from '@deck.gl/core';
+import { latlonlineGeoJson, figureGeoJson } from './utils'
 
 const settings = {
   initialViewState: {
