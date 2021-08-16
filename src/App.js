@@ -81,7 +81,7 @@ function App() {
           getLineColor={settings.figureLayer.color}
           lineWidthUnits={'pixels'}
           lineWidthScale={1}
-          getLineWidth={1}
+          getLineWidth={3}
 
           pickable={true}
           highlightColor={settings.highlight.color}
