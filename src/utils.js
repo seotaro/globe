@@ -46,3 +46,33 @@ export const latlonlineGeoJson = (() => {
 
     return geojson;
 })();
+
+
+
+export const figureGeoJson = (() => {
+    const d = 1;  // [°]。精度みたいなもの。
+    const dlon = 10;  // [°]。
+    const dlat = 10;  // [°]。
+
+    const geojson = {
+        type: "FeatureCollection",
+        features: [],
+    };
+
+    const lat = 40.0;
+    const coordinates = [];
+    for (let lon = -180; lon <= 180; lon += d) {
+        coordinates.push([lon, lat]);
+    }
+
+    const feature = {
+        type: "Feature",
+        id: geojson.features.length,
+        geometry: { type: 'LineString', coordinates: coordinates },
+        properties: {},
+        info: `${Math.abs(lat)}°${(lat < 0) ? 'S' : 'N'}`
+    };
+    geojson.features.push(feature);
+
+    return geojson;
+})();
