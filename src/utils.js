@@ -113,9 +113,24 @@ export function figureGeoJson(position) {
 
     // 直交座標系から緯度経度座標系に変換する。
     const coordinates = [];
+    let oldPhi = null;
     for (const vertex of vertices) {
         const s = spherical(vertex);    // 球座標系
-        coordinates.push([s.phi * 180.0 / Math.PI, 90.0 - s.theta * 180.0 / Math.PI]);
+
+        // 180°E, または 180°W をまたぐ場合は、経度方向に同じ符号で延長する。
+        let phi = s.phi;
+        if (oldPhi != null) {
+            const dphi = oldPhi - s.phi
+            if (dphi < Math.PI * -1) {
+                phi = Math.PI * -2.0 + phi;
+            } else if (Math.PI < dphi) {
+                phi = Math.PI * 2.0 + phi;
+            }
+        }
+
+        coordinates.push([phi * 180.0 / Math.PI, 90.0 - s.theta * 180.0 / Math.PI]);
+
+        oldPhi = phi;
     }
 
     const feature = {
