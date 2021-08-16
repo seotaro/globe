@@ -116,22 +116,29 @@ function circle(c, u, r, smoothness) {
 
         const s = innerProduct(q, u);
 
-        // 円のある平面を単位ベクトルs,tが直交する座標系で考える。
+        // 円のある平面を単位ベクトルs,tが直交する座標系で考えると
         // 円周上の点pはp = e + s・cosθ + t・sinθで表される。
         // いろいろ展開して下式を得る。
         for (let t = 0.0; t < 2.0 * Math.PI; t += smoothness) {
+
             const v = {
+                x: q.x * Math.cos(t),
+                y: q.y * Math.cos(t),
+                z: q.z * Math.cos(t),
+            };
+
+            const w = outerProduct(u, {
                 x: q.x * Math.sin(t),
                 y: q.y * Math.sin(t),
                 z: q.z * Math.sin(t),
-            };
-            const w = outerProduct(u, v);
+            });
 
             const p = {
-                x: q.x * Math.cos(t) + u.x * (1 - Math.cos(t)) * s + w.x,
-                y: q.y * Math.cos(t) + u.y * (1 - Math.cos(t)) * s + w.y,
-                z: q.z * Math.cos(t) + u.z * (1 - Math.cos(t)) * s + w.z,
+                x: u.x * (1 - Math.cos(t)) * s + v.x + w.x,
+                y: u.y * (1 - Math.cos(t)) * s + v.y + w.y,
+                z: u.z * (1 - Math.cos(t)) * s + v.z + w.z,
             };
+
             vertices.push({ x: c.x + p.x, y: c.y + p.y, z: c.z + p.z });
         }
     }
