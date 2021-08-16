@@ -48,12 +48,18 @@ function App() {
           getPolygon={d => d}
           filled={true}
           getFillColor={settings.backgroundLayer.color}
+
+          pickable={true}
+          onClick={(info, event) => setPosition({ lon: info.coordinate[0], lat: info.coordinate[1] })}
         />
 
         <GeoJsonLayer id="map-layer"
           data={settings.mapLayer.url}
           filled={true}
           getFillColor={settings.mapLayer.color}
+
+          pickable={true}
+          onClick={(info, event) => setPosition({ lon: info.coordinate[0], lat: info.coordinate[1] })}
         />
 
         <GeoJsonLayer id="latlon-line-layer"
@@ -64,23 +70,9 @@ function App() {
           lineWidthScale={1}
           getLineWidth={1}
 
-        // pickable={true}
-        // highlightColor={settings.highlight.color}
-        // autoHighlight={true}
-        />
-
-        <GeoJsonLayer id="latlon-grid-layer"
-          data={latlonGridGeoJson}
-          stroked={true}
-          getLineColor={settings.latlonGridLayer.color}
-          lineWidthUnits={'pixels'}
-          lineWidthScale={1}
-          getLineWidth={10}
-
           pickable={true}
           highlightColor={settings.highlight.color}
           autoHighlight={true}
-          onClick={(info, event) => setPosition({ lon: info.coordinate[0], lat: info.coordinate[1] })}
         />
 
         <GeoJsonLayer id="figure-layer"
