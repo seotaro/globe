@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 
 import DeckGL from '@deck.gl/react';
 import { GeoJsonLayer, SolidPolygonLayer, IconLayer, TextLayer } from '@deck.gl/layers';
@@ -33,6 +33,8 @@ const settings = {
 };
 
 function App() {
+  const [position, setPosition] = useState(null);
+
   return (
     <Fragment>
 
@@ -73,15 +75,16 @@ function App() {
           getLineColor={settings.latlonGridLayer.color}
           lineWidthUnits={'pixels'}
           lineWidthScale={1}
-          getLineWidth={5}
+          getLineWidth={10}
 
           pickable={true}
           highlightColor={settings.highlight.color}
           autoHighlight={true}
+          onClick={(info, event) => setPosition({ lon: info.coordinate[0], lat: info.coordinate[1] })}
         />
 
         <GeoJsonLayer id="figure-layer"
-          data={figureGeoJson}
+          data={figureGeoJson(position)}
           stroked={true}
           getLineColor={settings.figureLayer.color}
           lineWidthUnits={'pixels'}

@@ -79,27 +79,42 @@ export const latlonGridGeoJson = (() => {
 })();
 
 
-export const figureGeoJson = (() => {
+export function figureGeoJson(position) {
+    if (position == null) {
+        return;
+    }
+
     const smoothness = 0.017444444; // 円の滑らかさ[rad]。0.017444444[rad] = 1[°]
     const geojson = {
         type: "FeatureCollection",
         features: [],
     };
 
-    const c = { x: 0.8, y: 0.0, z: 0.0 };  // 円の中心
-    const u = { x: 1.0, y: 0.0, z: 0.0 };  // 円の法線ベクトル
-    const r = Math.sqrt(1.0 - c.x * c.x);  // 円の半径
-    const vertices = circle(c, u, r, smoothness);
+    // 円の法線ベクトル
+    const u = rectangular(
+        {
+            r: 1.0,
+            theta: (90.0 - position.lat) * Math.PI / 180.0,
+            phi: position.lon * Math.PI / 180.0
+        });
 
-    // const c = { x: 0.0, y: 0.0, z: 0.5 };  // 円の中心
-    // const u = { x: 0.0, y: 0.0, z: 1.0 };  // 円の法線ベクトル
-    // const r = Math.sqrt(1.0 - c.z * c.z);  // 円の半径
-    // const vertices = circle(c, u, r, smoothness);
+    const alpha = 20.0 * Math.PI / 180.0;   // 弧で表した半径 [rad]
 
-    // 球座標から緯度経度座標に変換する。
+    // 円の中心
+    const c = {
+        x: u.x * Math.cos(alpha),
+        y: u.y * Math.cos(alpha),
+        z: u.z * Math.cos(alpha)
+    };
+
+    const r = 1.0 * Math.sin(alpha);  // 円の半径
+
+    const vertices = circle(c, u, r, smoothness);   // 直交座標系での頂点列
+
+    // 直交座標系から緯度経度座標系に変換する。
     const coordinates = [];
     for (const vertex of vertices) {
-        const s = spherical(vertex);
+        const s = spherical(vertex);    // 球座標系
         coordinates.push([s.phi * 180.0 / Math.PI, 90.0 - s.theta * 180.0 / Math.PI]);
     }
 
@@ -112,13 +127,13 @@ export const figureGeoJson = (() => {
     geojson.features.push(feature);
 
     return geojson;
-})();
+};
 
 // 円の頂点列を返す。
 //  c	円の中心
 //  u	円の法線ベクトル
 //  r	円の半径
-//  smoothness	円の滑らかさ[rad]。初期値は0.017444444[rad] = 1[°]
+//  smoothness	円の滑らかさ[rad]。
 function circle(c, u, r, smoothness) {
     let vertices = [];
 
