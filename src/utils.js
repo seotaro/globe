@@ -59,8 +59,11 @@ export function figureGeoJson(position) {
         features: [],
     };
 
+    const R = 40075000; // 地球円周 [m]
+    const r = 40075000 / 360 * 20;   // 求めたい円の半径 [m]
+
     // 直交座標系から緯度経度座標系に変換する。
-    const coordinates = circleOnSphere(position, 20.0, smoothness);
+    const coordinates = circleOnSphere(position, r, smoothness);
 
     const feature = {
         type: "Feature",
@@ -76,8 +79,10 @@ export function figureGeoJson(position) {
 // 半径を 1 とした球面上の円を返す。
 // position 中心座標[°]
 // smoothness	円の滑らかさ[rad]。
-// radius 弧で表した半径 [°]
+// radius 円の半径 [m]。地球を円周が 40075000 [m] の完全な球に近似する。
 function circleOnSphere(position, radius, smoothness) {
+    const R = 40075000; // 地球円周 [m]
+    const alpha = 2 * Math.PI * radius / R; // 弧度で表した半径 [rad]
 
     // 円の法線ベクトル
     const u = rectangular(
@@ -88,8 +93,6 @@ function circleOnSphere(position, radius, smoothness) {
         }
     );
 
-    const alpha = radius * Math.PI / 180.0;   // 弧で表した半径 [rad]
-
     // 円の中心
     const c = {
         x: u.x * Math.cos(alpha),
@@ -97,7 +100,7 @@ function circleOnSphere(position, radius, smoothness) {
         z: u.z * Math.cos(alpha)
     };
 
-    const r = 1.0 * Math.sin(alpha);  // 円の半径
+    const r = 1.0 * Math.sin(alpha);  // （球の半径を 1 としたときの）円の半径
 
     const vertices = circleOnPlane(c, u, r, smoothness);   // 直交座標系での頂点列
 
