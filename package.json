@@ -2,6 +2,7 @@
   "name": "globe",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@deck.gl/core": "^8.5.2",
     "@deck.gl/layers": "^8.5.2",
