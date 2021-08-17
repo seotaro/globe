@@ -59,15 +59,36 @@ export function figureGeoJson(position) {
         features: [],
     };
 
+    // 直交座標系から緯度経度座標系に変換する。
+    const coordinates = circleOnSphere(position, smoothness, 20.0);
+
+    const feature = {
+        type: "Feature",
+        id: geojson.features.length,
+        geometry: { type: 'LineString', coordinates: coordinates },
+        properties: {},
+    };
+    geojson.features.push(feature);
+
+    return geojson;
+};
+
+// 半径を 1 とした球面上の円を返す。
+// position 中心座標[°]
+// smoothness	円の滑らかさ[rad]。
+// radius 弧で表した半径 [°]
+function circleOnSphere(position, radius, smoothness) {
+
     // 円の法線ベクトル
     const u = rectangular(
         {
             r: 1.0,
             theta: (90.0 - position.lat) * Math.PI / 180.0,
             phi: position.lon * Math.PI / 180.0
-        });
+        }
+    );
 
-    const alpha = 20.0 * Math.PI / 180.0;   // 弧で表した半径 [rad]
+    const alpha = radius * Math.PI / 180.0;   // 弧で表した半径 [rad]
 
     // 円の中心
     const c = {
@@ -78,10 +99,11 @@ export function figureGeoJson(position) {
 
     const r = 1.0 * Math.sin(alpha);  // 円の半径
 
-    const vertices = circle(c, u, r, smoothness);   // 直交座標系での頂点列
+    const vertices = circleOnPlane(c, u, r, smoothness);   // 直交座標系での頂点列
+
+    const coordinates = [];
 
     // 直交座標系から緯度経度座標系に変換する。
-    const coordinates = [];
     let oldPhi = null;
     for (const vertex of vertices) {
         const s = spherical(vertex);    // 球座標系
@@ -102,23 +124,15 @@ export function figureGeoJson(position) {
         oldPhi = phi;
     }
 
-    const feature = {
-        type: "Feature",
-        id: geojson.features.length,
-        geometry: { type: 'LineString', coordinates: coordinates },
-        properties: {},
-    };
-    geojson.features.push(feature);
-
-    return geojson;
-};
+    return coordinates;
+}
 
 // 円の頂点列を返す。
 //  c	円の中心
 //  u	円の法線ベクトル
 //  r	円の半径
 //  smoothness	円の滑らかさ[rad]。
-function circle(c, u, r, smoothness) {
+function circleOnPlane(c, u, r, smoothness) {
     let vertices = [];
 
     // 底円の頂点を算出する。
@@ -148,7 +162,8 @@ function circle(c, u, r, smoothness) {
         const w = outerProduct(u, v);
 
         for (let t = 0.0; t < 2.0 * Math.PI; t += smoothness) {
-            // 円のある平面で考えて、円周上の点 P は θ をパラメータとして P = C + S・cosθ + T・sinθ で表される。
+            // 円のある平面で考える。
+            // 円周上の点 P は θ をパラメータとして P = C + S・cosθ + T・sinθ で表される。
             const p = {
                 x: c.x + v.x * Math.cos(t) + w.x * Math.sin(t),
                 y: c.y + v.y * Math.cos(t) + w.y * Math.sin(t),
