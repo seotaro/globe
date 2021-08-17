@@ -60,7 +60,7 @@ export function figureGeoJson(position) {
     };
 
     // 直交座標系から緯度経度座標系に変換する。
-    const coordinates = circleOnSphere(position, smoothness, 20.0);
+    const coordinates = circleOnSphere(position, 20.0, smoothness);
 
     const feature = {
         type: "Feature",
