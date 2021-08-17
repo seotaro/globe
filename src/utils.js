@@ -127,11 +127,11 @@ function circle(c, u, r, smoothness) {
 
         for (let t = 0.0; t < 2.0 * Math.PI; t += smoothness) {
             const p = {
-                x: r * Math.cos(t),
-                y: r * Math.sin(t),
-                z: 0.0
+                x: c.x + r * Math.cos(t),
+                y: c.y + r * Math.sin(t),
+                z: c.z + 0.0
             };
-            vertices.push({ x: c.x + p.x, y: c.y + p.y, z: c.z + p.z });
+            vertices.push(p);
         }
 
     } else {
@@ -144,32 +144,17 @@ function circle(c, u, r, smoothness) {
             z: 0.0
         };
 
-        const s = innerProduct(q, u);
+        // 円周上にあって、q と直交するベクトル
+        const v = outerProduct(u, q);
 
-        // 円のある平面を単位ベクトルs,tが直交する座標系で考えると
-        // 円周上の点pはp = e + s・cosθ + t・sinθで表される。
-        // いろいろ展開して下式を得る。
         for (let t = 0.0; t < 2.0 * Math.PI; t += smoothness) {
-
-            const v = {
-                x: q.x * Math.cos(t),
-                y: q.y * Math.cos(t),
-                z: q.z * Math.cos(t),
-            };
-
-            const w = outerProduct(u, {
-                x: q.x * Math.sin(t),
-                y: q.y * Math.sin(t),
-                z: q.z * Math.sin(t),
-            });
-
+            // 円のある平面で考えて、円周上の点 P は θ をパラメータとして P = C + S・cosθ + T・sinθ で表される。
             const p = {
-                x: u.x * (1 - Math.cos(t)) * s + v.x + w.x,
-                y: u.y * (1 - Math.cos(t)) * s + v.y + w.y,
-                z: u.z * (1 - Math.cos(t)) * s + v.z + w.z,
+                x: c.x + q.x * Math.cos(t) + v.x * Math.sin(t),
+                y: c.y + q.y * Math.cos(t) + v.y * Math.sin(t),
+                z: c.z + q.z * Math.cos(t) + v.z * Math.sin(t),
             };
-
-            vertices.push({ x: c.x + p.x, y: c.y + p.y, z: c.z + p.z });
+            vertices.push(p);
         }
     }
 
