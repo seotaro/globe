@@ -138,21 +138,21 @@ function circle(c, u, r, smoothness) {
         // Z軸と平行でない場合
 
         // 法線ベクトルuの平面上にあって、中心が原点、半径がrの円の平面z=0との交点（2つあるうちの一つ）
-        const q = {
+        const v = {
             x: u.y / Math.sqrt(u.x * u.x + u.y * u.y) * r,
             y: - u.x / Math.sqrt(u.x * u.x + u.y * u.y) * r,
             z: 0.0
         };
 
         // 円周上にあって、q と直交するベクトル
-        const v = outerProduct(u, q);
+        const w = outerProduct(u, v);
 
         for (let t = 0.0; t < 2.0 * Math.PI; t += smoothness) {
             // 円のある平面で考えて、円周上の点 P は θ をパラメータとして P = C + S・cosθ + T・sinθ で表される。
             const p = {
-                x: c.x + q.x * Math.cos(t) + v.x * Math.sin(t),
-                y: c.y + q.y * Math.cos(t) + v.y * Math.sin(t),
-                z: c.z + q.z * Math.cos(t) + v.z * Math.sin(t),
+                x: c.x + v.x * Math.cos(t) + w.x * Math.sin(t),
+                y: c.y + v.y * Math.cos(t) + w.y * Math.sin(t),
+                z: c.z + v.z * Math.cos(t) + w.z * Math.sin(t),
             };
             vertices.push(p);
         }
